@@ -2,11 +2,13 @@
 
 AccentNet is an end-to-end accent conversion system that separates *what is being said* from *how it is spoken*. By disentangling linguistic content, speaker identity, prosody, and accent-specific cues, the project converts a source utterance into a target accent while preserving the original speaker’s voice and rhythm.
 
-The work is motivated by the communication barriers outlined in `SMC Project.pdf`: multilingual regions such as India or Singapore frequently experience comprehension gaps caused by accent diversity, and curated parallel data covering multiple accents is scarce. AccentNet addresses the problem by fusing transfer learning for robust encoders with a FastSpeech2-style acoustic decoder and a neural vocoder.
+The work is motivated by the communication barriers: multilingual regions such as India or Singapore frequently experience comprehension gaps caused by accent diversity, and curated parallel data covering multiple accents is scarce. AccentNet addresses the problem by fusing transfer learning for robust encoders with a FastSpeech2-style acoustic decoder and a neural vocoder.
 
 ## High-Level Architecture
 
 The diagram in `AccentNet_Architecture.png` summarizes the pipeline:
+
+!['AccentNet_Architecture'](AccentNet_Architecture.png)
 
 1. **Content Encoder** extracts linguistic features (ContentVec-sized 768-d vectors per frame).
 2. **Prosody Extractor** captures F0, energy, and duration cues from the source utterance.
@@ -23,11 +25,9 @@ ContentEncoder/        # Notebooks and helpers for ContentVec feature prep
 Decoder/               # FastSpeech2Accent model, datasets, configs, training & inference scripts
 Prosody/               # Prosody encoder + extraction helpers (PyWorld + librosa)
 SpeakerEncoder/        # SpeechBrain ECAPA-TDNN wrapper for speaker embeddings
-SMC Project.pdf        # Slides describing motivation, datasets, challenges
 AccentNet_Architecture.png
 ```
 
-Notebooks (`*.ipynb`) capture exploratory analysis, while the Python modules provide reproducible pipelines.
 
 ## Data Sources & Preparation
 
@@ -176,24 +176,6 @@ python Decoder/convert_accent.py \
 
 The script fetches matching source/target embeddings, runs the decoder, and synthesizes audio with SpeechBrain’s HiFi-GAN (default `speechbrain/tts-hifigan-ljspeech`).
 
-7. **Evaluation**
-   - Compare generated mels against target mels (L1 distance printed during inference).
-   - Use listening tests, MOS-style surveys, or accent classifiers for objective scoring.
-
-## Experiments & Notes
-
-- The PDF deck documents slide-level insights: dataset coverage, ECAPA similarity matrices, prosody extraction methodology, accent encoder adversarial strategy, and FastSpeech2 adaptation choices.
-- The `Alternate Architecture` folder stores exploratory diffusion-based decoder ideas (intentionally excluded from this README per project notes).
-
-## Future Directions
-
-Based on current gaps (see `SMC Project.pdf`, “Challenges” slide):
-
-- **Data synthesis / augmentation** to alleviate the lack of parallel accent pairs.
-- **Retraining the decoder core** to natively accept higher-dimensional fused embeddings rather than projecting into 256-d.
-- **Diffusion-based decoders** for improved naturalness with limited data.
-- **Objective metrics** combining accent classification accuracy and speaker similarity to benchmark conversion quality.
-
 ## Environment & Dependencies
 
 - Python ≥ 3.9, PyTorch ≥ 2.0.
@@ -208,6 +190,3 @@ pip install speechbrain librosa pyworld soundfile
 
 GPU acceleration is highly recommended for the Conformer encoder and FastSpeech2 decoder training loops.
 
----
-
-Feel free to adapt the scripts to new accents or datasets—every major step (manifest generation, feature caching, embedding extraction, decoding, and synthesis) has an accompanying CLI entry point to keep experiments reproducible.
